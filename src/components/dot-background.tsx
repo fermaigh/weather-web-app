@@ -19,11 +19,14 @@ export default function DotBackground() {
   const pointsRef = useRef<Point[]>([]);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const canvasEl = canvasRef.current;
+    if (!canvasEl) return;
 
-    const ctx = canvas.getContext("2d");
+    const canvasNode: HTMLCanvasElement = canvasEl;
+
+    const ctx = canvasNode.getContext("2d");
     if (!ctx) return;
+    const ctxNode: CanvasRenderingContext2D = ctx;
 
     const prefersReducedMotion =
       typeof window !== "undefined" &&
@@ -60,12 +63,12 @@ export default function DotBackground() {
       width = Math.max(1, window.innerWidth);
       height = Math.max(1, window.innerHeight);
 
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
-      canvas.width = Math.floor(width * dpr);
-      canvas.height = Math.floor(height * dpr);
+      canvasNode.style.width = `${width}px`;
+      canvasNode.style.height = `${height}px`;
+      canvasNode.width = Math.floor(width * dpr);
+      canvasNode.height = Math.floor(height * dpr);
 
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctxNode.setTransform(dpr, 0, 0, dpr, 0, 0);
       rebuildPoints();
     }
 
@@ -80,7 +83,7 @@ export default function DotBackground() {
         ? `rgba(255,255,255,${baseAlpha})`
         : `rgba(210,210,210,${baseAlpha})`;
 
-      ctx.clearRect(0, 0, w, h);
+      ctxNode.clearRect(0, 0, w, h);
 
       const cursor = cursorRef.current;
       const cx = cursor.active ? cursor.x : w / 2;
@@ -92,7 +95,7 @@ export default function DotBackground() {
       const globalX = nx * globalStrength;
       const globalY = ny * globalStrength;
 
-      ctx.fillStyle = dotColor;
+      ctxNode.fillStyle = dotColor;
 
       const pts = pointsRef.current;
       const r2 = radius * radius;
@@ -119,9 +122,9 @@ export default function DotBackground() {
         }
 
         // Small dots; slightly larger for discoverability.
-        ctx.beginPath();
-        ctx.arc(x, y, 1.55, 0, Math.PI * 2);
-        ctx.fill();
+        ctxNode.beginPath();
+        ctxNode.arc(x, y, 1.55, 0, Math.PI * 2);
+        ctxNode.fill();
       }
     }
 
