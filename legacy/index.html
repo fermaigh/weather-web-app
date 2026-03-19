@@ -21,36 +21,40 @@
               <header class="bx--tile__header app-header">
                 <h1 class="bx--type-expressive-heading-04">Weather right now</h1>
                 <p class="bx--type-body-long-01">
-                  Search any city to see the current conditions.
+                  Search any location to see the current conditions.
                 </p>
               </header>
 
-              <form class="bx--form" aria-label="City search" onsubmit="return false;">
+              <form id="search-form" class="bx--form" aria-label="Location search">
                 <div class="bx--form-item">
-                  <label class="bx--label" for="city-input">City</label>
+                  <label class="bx--label" for="location-input">Location</label>
                   <div class="bx--text-input__field-wrapper app-search-row">
                     <input
-                      id="city-input"
+                      id="location-input"
                       class="bx--text-input"
                       type="text"
                       placeholder="e.g. London, Tokyo, New York"
                       autocomplete="off"
+                      aria-describedby="search-hint search-error"
+                      aria-invalid="false"
                     />
                     <button
                       id="search-btn"
                       class="bx--btn bx--btn--primary app-search-btn"
-                      type="button"
+                      type="submit"
                     >
                       Search
                     </button>
                   </div>
                   <p id="search-hint" class="bx--form__helper-text">
-                    Type a city name and press Enter or Search.
+                    Type a location name and press Enter or Search.
                   </p>
                   <p
                     id="search-error"
                     class="bx--form-requirement app-error-inline"
                     hidden
+                    role="alert"
+                    aria-live="polite"
                   ></p>
                 </div>
               </form>
@@ -60,6 +64,7 @@
                 class="bx--tile app-weather"
                 hidden
                 aria-live="polite"
+                aria-busy="false"
               >
                 <div class="app-weather-main">
                   <div class="app-weather-icon-wrapper">
@@ -97,6 +102,7 @@
                 class="bx--inline-notification bx--inline-notification--error app-error"
                 hidden
                 aria-live="polite"
+                role="alert"
               >
                 <div class="bx--inline-notification__details">
                   <div class="bx--inline-notification__text-wrapper">
@@ -109,8 +115,8 @@
               </section>
 
               <footer class="app-footer">
-                <p class="bx--type-caption-01">
-                  This is a personal project based on the API provided by Weather.com.
+                <p class="bx--type-caption-01 app-footer-text">
+                  Built as a personal project. Weather data provided by Open-Meteo.
                 </p>
               </footer>
             </section>

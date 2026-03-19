@@ -8,9 +8,11 @@ const weatherTempEl = document.getElementById('weather-temp');
 const weatherLocationEl = document.getElementById('weather-location');
 const weatherUpdatedEl = document.getElementById('weather-updated');
 
-const cityInput = document.getElementById('city-input');
+const locationInput = document.getElementById('location-input');
 const searchBtn = document.getElementById('search-btn');
 const searchError = document.getElementById('search-error');
+const searchHint = document.getElementById('search-hint');
+const searchForm = document.getElementById('search-form');
 
 function showSection(section) {
   weatherSection.hidden = section !== 'weather';
@@ -25,10 +27,12 @@ function setSearchError(message) {
   if (!message) {
     searchError.hidden = true;
     searchError.textContent = '';
+    locationInput.setAttribute('aria-invalid', 'false');
     return;
   }
   searchError.hidden = false;
   searchError.textContent = message;
+  locationInput.setAttribute('aria-invalid', 'true');
 }
 
 function formatTemperature(celsius) {
@@ -87,10 +91,10 @@ function formatUpdatedTime(timestampSeconds) {
   })}`;
 }
 
-async function fetchWeatherForCity(city) {
-  // First, turn the city name into coordinates using Open-Meteo's geocoding API.
+async function fetchWeatherForLocation(location) {
+  // First, turn the location name into coordinates using Open-Meteo's geocoding API.
   const geoParams = new URLSearchParams({
-    name: city,
+    name: location,
     count: '1',
     language: 'en',
     format: 'json',
@@ -162,44 +166,64 @@ function updateWeatherUI(data) {
 }
 
 function initialize() {
-  function submitSearch() {
-    const raw = cityInput.value.trim();
+  let isLoading = false;
+  const initialHintText = searchHint.textContent;
+
+  // Initial UX: no weather/error placeholders until a successful search.
+  weatherSection.hidden = true;
+  errorSection.hidden = true;
+  weatherSection.setAttribute('aria-busy', 'false');
+  errorMessage.textContent = '';
+  setSearchError('');
+
+  async function submitSearch() {
+    if (isLoading) return;
+
+    const raw = locationInput.value.trim();
     if (!raw) {
-      setSearchError('Please enter a city name.');
+      setSearchError('Please enter a location name.');
       return;
     }
+
+    isLoading = true;
+    searchHint.textContent = 'Loading...';
+    searchBtn.disabled = true;
+    locationInput.disabled = true;
+    weatherSection.setAttribute('aria-busy', 'true');
 
     setSearchError('');
     setGlobalError('');
 
-    fetchWeatherForCity(raw)
-      .then((data) => {
-        updateWeatherUI(data);
-        showSection('weather');
-      })
-      .catch((error) => {
-        console.error(error);
-        let message =
-          'We were unable to fetch weather data right now. Please try again in a moment.';
+    try {
+      const data = await fetchWeatherForLocation(raw);
+      updateWeatherUI(data);
+      showSection('weather');
+    } catch (error) {
+      console.error(error);
+      let message =
+        'We were unable to fetch weather data right now. Please try again in a moment.';
 
-        if (error && typeof error.message === 'string') {
-          if (error.message.includes('CITY_NOT_FOUND') || error.code === 'CITY_NOT_FOUND') {
-            message = 'We could not find that city. Please check the spelling and try again.';
-          }
+      if (error && typeof error.message === 'string') {
+        if (error.message.includes('CITY_NOT_FOUND') || error.code === 'CITY_NOT_FOUND') {
+          message =
+            'We could not find that location. Please check the spelling and try again.';
         }
+      }
 
-        setGlobalError(message);
-        showSection('error');
-      });
+      setGlobalError(message);
+      showSection('error');
+    } finally {
+      isLoading = false;
+      searchHint.textContent = initialHintText;
+      searchBtn.disabled = false;
+      locationInput.disabled = false;
+      weatherSection.setAttribute('aria-busy', 'false');
+    }
   }
 
-  searchBtn.addEventListener('click', submitSearch);
-
-  cityInput.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') {
-      event.preventDefault();
-      submitSearch();
-    }
+  searchForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    submitSearch();
   });
 }
 
