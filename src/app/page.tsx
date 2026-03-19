@@ -7,6 +7,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import DotBackground from "@/components/dot-background";
+import ThemeToggle from "@/components/theme-toggle";
 import {
   fetchWeatherForLocation,
   formatTemperature,
@@ -75,10 +76,15 @@ export default function Page() {
       <main className="relative z-10 mx-auto flex min-h-screen w-full max-w-2xl flex-col items-center justify-center p-4">
         <Card className="relative z-10 w-full shadow-lg">
           <CardHeader>
-            <CardTitle className="text-2xl">Weather right now</CardTitle>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Search any location to see the current conditions.
-            </p>
+            <div className="flex w-full items-start justify-between gap-4">
+              <div>
+                <CardTitle className="text-2xl">Weather right now</CardTitle>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Search any location to see the current conditions.
+                </p>
+              </div>
+              <ThemeToggle />
+            </div>
           </CardHeader>
 
           <CardContent className="space-y-6">
