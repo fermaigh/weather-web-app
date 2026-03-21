@@ -1,0 +1,2 @@
+This is a project that made by AI completely with a little guide and love along the way.
+The purpose of this project is completely for personal experitment with Codex, OpenAI, Cursor and web technology, the experiment was for how 
